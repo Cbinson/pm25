@@ -97,4 +97,4 @@ http.createServer(app).listen(app.get('port'), function(){
 
 
 pm25();
-setInterval(pm25,60*60*1000); //中央氣象局1小時更新一次
+setInterval(pm25,1*60*1000); //中央氣象局1小時更新一次

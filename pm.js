@@ -76,7 +76,9 @@ db.once('open', function callback () {
     console.log('Successfully mongodb is con//nected');
 });
 
-app.get('/',db);
+app.get('/',function(req, res){
+  res.send("hello world");
+});
 
 var pm = mongoose.model('airpm', {
   SiteName: String,

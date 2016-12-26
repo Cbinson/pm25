@@ -1,6 +1,7 @@
 //導入模塊
 var request = require("request");
 var express = require("express");
+var http = require('http');
 var cheerio = require("cheerio");
 var mongoose = require('mongoose');
 var fs = require("fs");
@@ -76,10 +77,6 @@ db.once('open', function callback () {
     console.log('Successfully mongodb is con//nected');
 });
 
-app.get('/',function(req, res){
-  res.send("hello world");
-});
-
 var pm = mongoose.model('airpm', {
   SiteName: String,
   AreaKey: String,
@@ -88,6 +85,14 @@ var pm = mongoose.model('airpm', {
   PM25_AVG: String,
   PM10_AVG: String,
   Time: String
+});
+
+app.get('/',function(req, res){
+  res.send("hello world");
+});
+
+http.createServer(app).listen(app.get('port'), function(){
+  console.log("Express server listening on port " + app.get('port'));
 });
 
 

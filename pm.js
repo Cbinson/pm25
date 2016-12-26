@@ -2,6 +2,7 @@
 var request = require("request");
 var express = require("express");
 var http = require('http');
+var pmRoute = require('./routes/update');
 var cheerio = require("cheerio");
 var mongoose = require('mongoose');
 var fs = require("fs");
@@ -87,9 +88,10 @@ var pm = mongoose.model('airpm', {
   Time: String
 });
 
-app.get('/',function(req, res){
-  res.send("hello world");
-});
+// app.get('/',function(req, res){
+//   res.send("hello world");
+// });
+app.get('/pm',pmRoute.index);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

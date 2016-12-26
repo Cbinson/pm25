@@ -67,8 +67,6 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-
-
 //連接db
 mongoose.connect('mongodb://binson:binsonpm25@ds141098.mlab.com:41098/airpm');
 

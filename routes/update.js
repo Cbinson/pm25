@@ -1,5 +1,5 @@
-var mongoose = require('mongoose');
-var Airpm = mongoose.model('airpm');
+// var mongoose = require('mongoose');
+// var Airpm = mongoose.model('airpm');
 
 // exports.index  = function(req,res){
 //     Airpm.find( function(err, pm) {

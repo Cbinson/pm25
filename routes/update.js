@@ -1,12 +1,13 @@
-// var mongoose = require('mongoose');
-// var Airpm = mongoose.model('airpm');
+var mongoose = require('mongoose');
+var Airpm = mongoose.model('airpm');
 
-// exports.index  = function(req,res){
-//     Airpm.find( function(err, pm) {
-//         if (err) return res.render('Error occurred');
-//         res.send(pm);
-//     });
-// };
+exports.index  = function(req,res){
+	console.log("xxxxx");
+    Airpm.find( function(err, pm) {
+        if (err) return res.render('Error occurred');
+        res.send(pm);
+    });
+};
 
 // exports.findById = function(req,res){
 //     Airpm.findById( req.params.id, function( err, pm ) {

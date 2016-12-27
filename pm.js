@@ -2,6 +2,7 @@
 var request = require("request");
 var express = require("express");
 var http = require('http');
+var pmModel = require('./models/update')
 var pmRoute = require('./routes/update');
 var cheerio = require("cheerio");
 var mongoose = require('mongoose');

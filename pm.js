@@ -69,6 +69,7 @@ app.configure(function(){
 app.configure('development', function(){
   app.use(express.errorHandler());
 });
+console.log("11111111111");
 
 //連接db
 mongoose.connect('mongodb://binson:binsonpm25@ds141098.mlab.com:41098/airpm');
@@ -78,7 +79,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback () {
     console.log('Successfully mongodb is con//nected');
 });
-
+console.log("2222222222");
 var pm = mongoose.model('airpm', {
   SiteName: String,
   AreaKey: String,
@@ -88,16 +89,22 @@ var pm = mongoose.model('airpm', {
   PM10_AVG: String,
   Time: String
 });
-
+console.log("33333333333");
 // app.get('/',function(req, res){
 //   res.send("hello world");
 // });
-app.get('/pm',pmRoute.index);
-
+app.get('/pm',function(req,res){
+  console.log("xxxxx");
+    pm.find( function(err, pm) {
+        if (err) return res.render('Error occurred');
+        res.send(pm);
+    });
+});
+console.log("44444444444");
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
 
 
 pm25();
-setInterval(pm25,60*60*1000); //中央氣象局1小時更新一次
+setInterval(pm25,1*60*1000); //中央氣象局1小時更新一次

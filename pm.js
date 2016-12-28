@@ -10,7 +10,8 @@ var fs = require("fs");
 
 var pm25 = function() {
   request({
-    url: "http://taqm.epa.gov.tw/taqm/tw/Pm25Index.aspx",
+    // url: "http://taqm.epa.gov.tw/taqm/tw/Pm25Index.aspx",
+    url: "http://taqm.epa.gov.tw/taqm/tw/AqiMap.aspx",
     method: "GET"
   }, function(error, response, body) {
     if (error || !body) {
@@ -44,7 +45,20 @@ var pm25 = function() {
           //console.log(data.SiteName + ', PM2.5: '+ data.PM25 +' (' + varTime.toLocaleTimeString() + ')');
         //}
 
-        var item = new pm({ SiteName: data.SiteName, AreaKey:data.AreaKey, FPMI:data.FPMI, PM25: data.PM25, PM25_AVG:data.PM25_AVG, PM10_AVG:data.PM10_AVG, Time: varTime.toLocaleTimeString()});
+        // var item = new pm({ SiteName: data.SiteName, AreaKey:data.AreaKey, FPMI:data.FPMI, PM25: data.PM25, PM25_AVG:data.PM25_AVG, PM10_AVG:data.PM10_AVG, Time: varTime.toLocaleTimeString()});
+        var item = new pm({ 
+          SiteName: data.SiteName, 
+          AreaKey: data.AreaKey, 
+          AQI: data.AQI,
+          O3_8: data.O3_8,
+          O3: data.O3,
+          PM25: data.PM25,
+          PM25_AVG: data.PM25_AVG,
+          PM10: data.PM10,
+          PM10_AVG: data.PM10_AVG,
+          MonobjName: data.MonobjName, //觀測站屬性
+          Time: varTime.toLocaleTimeString()});
+
         item.save(function(error){
           if (error) {
             console.log('menow');
@@ -69,7 +83,6 @@ app.configure(function(){
 app.configure('development', function(){
   app.use(express.errorHandler());
 });
-console.log("11111111111");
 
 //連接db
 mongoose.connect('mongodb://binson:binsonpm25@ds141098.mlab.com:41098/airpm');
@@ -79,28 +92,36 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function callback () {
     console.log('Successfully mongodb is con//nected');
 });
-console.log("2222222222");
+
 var pm = mongoose.model('airpm', {
+  // SiteName: String,
+  // AreaKey: String,
+  // AQI: String,
+  // FPMI: String,
+  // PM25: String,
+  // PM25_AVG: String,
+  // PM10_AVG: String,
+  // Time: String
   SiteName: String,
   AreaKey: String,
-  FPMI: String,
+  AQI: String,
+  O3_8: String,
+  O3: String,
   PM25: String,
   PM25_AVG: String,
+  PM10: String,
   PM10_AVG: String,
+  MonobjName: String, //觀測站屬性
   Time: String
 });
-console.log("33333333333");
-// app.get('/',function(req, res){
-//   res.send("hello world");
-// });
+
 app.get('/pm',function(req,res){
-  console.log("xxxxx");
     pm.find( function(err, pm) {
         if (err) return res.render('Error occurred');
         res.send(pm);
     });
 });
-console.log("44444444444");
+
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });

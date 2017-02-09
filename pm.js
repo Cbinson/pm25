@@ -40,8 +40,9 @@ var pm25 = function() {
     console.log(result);
 
     for(var i=1 ; i<result.length ; i++){
+    	var tmpName = result[i][2].substring(16).split(' ')[0];
     	var item = new pm({ 
-    		SiteName: result[i][2].substring(16).split('\r')[0], 				//站名 
+    		SiteName: tmpName.split(' ')[0],//result[i][2].substring(16).split('\r')[0], 				//站名 
           	AQI: result[i][4].substring(16).split('\r')[0],						//空氣品質指標
           	O3: result[i][6].substring(16).split('\r')[0],						//臭氧
           	PM25: result[i][8].substring(16).split('\r')[0],					//細懸浮微粒
@@ -58,7 +59,10 @@ var pm25 = function() {
           }
         });
 
-    	console.log('linkSite:'+result[i][2].substring(16));	//站名
+    	
+
+
+    	console.log('linkSite:'+result[i][2].substring(16).split(' ')[0]);	//站名
     	console.log('labPSI:'+result[i][4].substring(16));		//空氣品質指標
     	console.log('labO3:'+result[i][6].substring(16));		//臭氧
     	console.log('labPM25:'+result[i][8].substring(16));		//細懸浮微粒

@@ -10,11 +10,11 @@ var fs = require("fs");
 
 var pm25 = function() {
   request({
-    // url: "http://taqm.epa.gov.tw/taqm/tw/Pm25Index.aspx",
-    url: "http://taqm.epa.gov.tw/taqm/tw/AqiMap.aspx",
+    url: "http://taqm.epa.gov.tw/taqm/tw/Aqi/North.aspx?type=all&fm=AqiMap",
     method: "GET"
   }, function(error, response, body) {
     if (error || !body) {
+      console.log('Error');
       return;
     }
 
@@ -26,51 +26,52 @@ var pm25 = function() {
     // 爬完網頁後要做的事情
     var $ = cheerio.load(body);
     var result = [];
-    var titles = $("area.jTip");
-    var location;
-    
-    for (var i = 0; i < titles.length; i++) {
-        result.push(titles.eq(i).attr('jtitle'));
-    }
-    
-    fs.writeFile("result.json", result, function() {
 
-      var varTime = new Date();
-      
-      for (var j = 0; j < result.length; j++) {
-        var data = JSON.parse(result[j]);
-        //console.log(data);
-        console.log(data.SiteName + ', PM2.5: '+ data.PM25 +' (' + varTime.toLocaleTimeString() + ')');
-        //if(data.SiteName=='前鎮'){
-          //console.log(data.SiteName + ', PM2.5: '+ data.PM25 +' (' + varTime.toLocaleTimeString() + ')');
-        //}
+ //    $('.box tr').each(function(i, dataTable){
+ //    	var $aqiSiteName = $(this).text().split('\n');
+ //    	result.push($aqiSiteName);
+	// });
 
-        // var item = new pm({ SiteName: data.SiteName, AreaKey:data.AreaKey, FPMI:data.FPMI, PM25: data.PM25, PM25_AVG:data.PM25_AVG, PM10_AVG:data.PM10_AVG, Time: varTime.toLocaleTimeString()});
-        var item = new pm({ 
-          SiteName: data.SiteName, 
-          AreaKey: data.AreaKey, 
-          AQI: data.AQI,
-          O3_8: data.O3_8,
-          O3: data.O3,
-          PM25: data.PM25,
-          PM25_AVG: data.PM25_AVG,
-          PM10: data.PM10,
-          PM10_AVG: data.PM10_AVG,
-          MonobjName: data.MonobjName, //觀測站屬性
-          Time: varTime.toLocaleTimeString()});
 
-        item.save(function(error){
+    $('.TABLE_G tr').each(function(i, dataTable){
+    	var $aqiSiteName = $(this).text().split('\n');
+    	result.push($aqiSiteName);
+	});
+    console.log(result);
+
+    for(var i=1 ; i<result.length ; i++){
+    	var item = new pm({ 
+    		SiteName: result[i][2].substring(16).split('\r')[0], 				//站名 
+          	AQI: result[i][4].substring(16).split('\r')[0],						//空氣品質指標
+          	O3: result[i][6].substring(16).split('\r')[0],						//臭氧
+          	PM25: result[i][8].substring(16).split('\r')[0],					//細懸浮微粒
+          	PM10: result[i][10].substring(16).split('\r')[0],					//懸浮微粒
+          	CO: result[i][12].substring(16).split('\r')[0],						//一氧化碳
+          	SO2: result[i][14].substring(16).split('\r')[0],					//二氧化硫
+          	NO2: result[i][16].substring(16).split('\r')[0], 					//二氧化氮
+          	Time: new Date().toLocaleTimeString()
+    	});
+
+    	item.save(function(error){
           if (error) {
-            console.log('menow');
+            console.log('SAVE Error');
           }
         });
-      }
-    });
+
+    	console.log('linkSite:'+result[i][2].substring(16));	//站名
+    	console.log('labPSI:'+result[i][4].substring(16));		//空氣品質指標
+    	console.log('labO3:'+result[i][6].substring(16));		//臭氧
+    	console.log('labPM25:'+result[i][8].substring(16));		//細懸浮微粒
+    	console.log('labPM10:'+result[i][10].substring(16));	//懸浮微粒
+    	console.log('labCO:'+result[i][12].substring(16));		//一氧化碳
+    	console.log('labSO2:'+result[i][14].substring(16));		//二氧化硫
+    	console.log('labNO2:'+result[i][16].substring(16));		//二氧化氮
+	}
   });
 };
 
 var app = express();
-app.listen(8888);
+
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
   app.use(express.favicon());
@@ -85,6 +86,7 @@ app.configure('development', function(){
 });
 
 //連接db
+mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://binson:binsonpm25@ds141098.mlab.com:41098/airpm');
 
 var db = mongoose.connection;
@@ -94,24 +96,14 @@ db.once('open', function callback () {
 });
 
 var pm = mongoose.model('airpm', {
-  // SiteName: String,
-  // AreaKey: String,
-  // AQI: String,
-  // FPMI: String,
-  // PM25: String,
-  // PM25_AVG: String,
-  // PM10_AVG: String,
-  // Time: String
-  SiteName: String,
-  AreaKey: String,
-  AQI: String,
-  O3_8: String,
-  O3: String,
-  PM25: String,
-  PM25_AVG: String,
-  PM10: String,
-  PM10_AVG: String,
-  MonobjName: String, //觀測站屬性
+  SiteName: String, 			//站名 
+  AQI: String,					//空氣品質指標
+  O3: String,					//臭氧
+  PM25: String,					//細懸浮微粒
+  PM10: String,					//懸浮微粒
+  CO: String,					//一氧化碳
+  SO2: String,					//二氧化硫
+  NO2: String, 					//二氧化氮
   Time: String
 });
 
